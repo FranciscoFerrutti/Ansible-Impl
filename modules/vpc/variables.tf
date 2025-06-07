@@ -12,5 +12,6 @@ variable "subnets" {
     cidr_block        = string
     availability_zone = string
     name              = string
+    public            = bool
   }))
 }
