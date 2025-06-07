@@ -1,5 +1,5 @@
 resource "aws_instance" "this" {
-  ami = data.aws_ami.ubuntu-24-04-lts.id
+  ami = "ami-084568db4383264d4" # Ubuntu 24.04 LTS
 
   key_name = var.key_name
   instance_type = var.instance_type

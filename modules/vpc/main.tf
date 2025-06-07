@@ -35,10 +35,17 @@ resource "aws_route" "this" {
   gateway_id             = aws_internet_gateway.this.id
 }
 
-resource "aws_route_table_association" "this" {
+locals {
+  subnets_map = {
+    for subnet in var.subnets : subnet.name => subnet
+  }
+}
+
+resource "aws_route_table_association" "public_subnet_association" {
   for_each = {
-    for k, subnet in aws_subnet.this : k => subnet
-    if var.subnets[k].public
+    for name, subnet in aws_subnet.this :
+    name => subnet
+    if local.subnets_map[name].public
   }
 
   subnet_id      = each.value.id

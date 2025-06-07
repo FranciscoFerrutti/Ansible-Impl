@@ -1,9 +1,11 @@
 variable "instances" {
   type = map(object({
-    name          = string
-    type          = string
+    key_name          = string
+    instance_type          = string
     storage_size  = optional(number)
     storage_type  = optional(string)
+    public_ip    = optional(bool, false)
+    user_data_path = optional(string, null)
   }))
   default = {
     master = {
@@ -39,6 +41,8 @@ variable "vpcs" {
   type = map(object({
     vpc_cidr    = string
     subnet_cidr = string
+    availability_zone = string
+    public = optional(bool, true)
   }))
   default = {
     master = {

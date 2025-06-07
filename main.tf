@@ -69,8 +69,8 @@ resource "aws_security_group" "ec2" {
   for_each = var.instances
 
   name        = each.key == "master" ? "SG-MasterServer" : "SG-WebServer${substr(each.key, -1, 1)}"
-  description = "Security group for ${each.value.name}"
-  vpc_id      = module.vpc[each.key].vpc_id
+  description = "Security group for ${each.value.key_name}"
+  vpc_id      = module.vpc[each.key].id
 
   // Inbound rules
   dynamic "ingress" {

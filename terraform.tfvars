@@ -1,43 +1,55 @@
 instances = {
   master = {
-    name         = "master"
-    type         = "t2.large"
-    storage_size = 20
-    storage_type = "gp3"
+    key_name      = "master"
+    instance_type = "t2.large"
+    storage_size  = 20
+    storage_type  = "gp3"
+    public_ip    = true
+    user_data_path = "modules/ec2/user_data/master.sh"
   }
   web1 = {
-    name = "web1"
-    type = "t2.micro"
+    key_name      = "web1"
+    instance_type = "t2.micro"
+    public_ip    = true
+    user_data_path = "modules/ec2/user_data/web1.sh"
   }
   web2 = {
-    name = "web2"
-    type = "t2.micro"
+    key_name      = "web2"
+    instance_type = "t2.micro"
+    public_ip    = true
+    user_data_path = "modules/ec2/user_data/web2.sh"
   }
   web3 = {
-    name = "web3"
-    type = "t2.micro"
+    key_name      = "web3"
+    instance_type = "t2.micro"
+    public_ip    = true
+    user_data_path = "modules/ec2/user_data/web3.sh"
   }
 }
 
 vpcs = {
   master = {
-    name        = "master"
-    vpc_cidr    = "10.0.6.0/20"
+    vpc_cidr    = "10.0.6.0/23"
     subnet_cidr = "10.0.1.0/24"
+    availability_zone = "us-east-1a"
+    public = true
   }
   web1 = {
-    name        = "web1"
-    vpc_cidr    = "10.0.0.0/20"
+    vpc_cidr    = "10.0.0.0/23"
     subnet_cidr = "10.0.0.0/24"
+    availability_zone = "us-east-1b"
+    public = true
   }
   web2 = {
-    name        = "web2"
-    vpc_cidr    = "10.0.2.0/20"
+    vpc_cidr    = "10.0.2.0/23"
     subnet_cidr = "10.0.0.0/24"
+    availability_zone = "us-east-1c"
+    public = true
   }
   web3 = {
-    name        = "web3"
-    vpc_cidr    = "10.0.4.0/20"
+    vpc_cidr    = "10.0.4.0/23"
     subnet_cidr = "10.0.0.0/24"
+    availability_zone = "us-east-1d"
+    public = true
   }
 }
