@@ -40,8 +40,8 @@ Desde la raíz del proyecto, ejecuta:
 
 ```powershell
 terraform init
-terraform plan
-terraform apply
+terraform plan -out tf_plan.out
+terraform apply ./tf_plan.out
 ```
 
 > **Nota:** El archivo `terraform.tfvars` ya contiene los parámetros necesarios, por lo que no es necesario especificarlo manualmente.
