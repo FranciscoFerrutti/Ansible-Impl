@@ -75,6 +75,7 @@ terraform apply
         - Comando de uso: ansible-playbook terminate_ec2.yml -e "instance_id=i-......"
 **launcher.yml**        : Lanza una instancia EC2 en al subnet deseada.
         - Comando de uso: ansible-playbook launch_ec2.yml --extra-vars "subnet_id=......."
+**update.yml**          : Update del firewall que corre como servicio en las web instances.
 
 
 ## Autores
