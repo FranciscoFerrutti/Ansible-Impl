@@ -1,0 +1,20 @@
+---
+- name: Dar de baja una instancia EC2 en AWS
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    region: us-east-1  # Region de AWS
+
+  tasks:
+    - name: Terminate EC2
+      amazon.aws.ec2_instance:
+        state: absent
+        instance_ids: "{{ instance_id }}"
+        region: "{{ region }}"
+      register: termination_result
+
+    - name: Show termination result
+      debug:
+        var: termination_result

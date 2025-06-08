@@ -1,0 +1,13 @@
+---
+- name: Actualizar firewalld en la web instance
+  hosts: "{{target_host}}"
+  become: yes
+  tasks:
+    - name: Actualizar cache de paquetes
+      apt:
+        update_cache: yes
+
+    - name: Actualizar firewalld
+      apt:
+        name: firewalld
+        state: latest
