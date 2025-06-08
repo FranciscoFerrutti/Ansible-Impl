@@ -14,6 +14,12 @@ resource "aws_instance" "this" {
 
   associate_public_ip_address = var.public_ip
 
+  root_block_device {
+    volume_type = var.storage_type
+    volume_size = var.storage_size
+    delete_on_termination = true
+  }
+
   tags = {
     Name = var.key_name
   }
@@ -21,19 +27,3 @@ resource "aws_instance" "this" {
 }
 
 data "aws_region" "current" {}
-
-resource "aws_ebs_volume" "this" {
-  availability_zone = aws_instance.this.availability_zone
-  type              = var.storage_type
-  size              = var.storage_size
-
-  tags = {
-    Name = "${var.key_name}-volume"
-  }
-}
-
-resource "aws_volume_attachment" "this" {
-  device_name = "/dev/xvdf"
-  volume_id   = aws_ebs_volume.this.id
-  instance_id = aws_instance.this.id
-}

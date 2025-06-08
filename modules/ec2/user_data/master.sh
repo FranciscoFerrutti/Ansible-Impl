@@ -36,7 +36,7 @@ sudo systemctl start docker
 
 # Switch to ubuntu user for subsequent commands
 log "Switching to ubuntu user for AWX setup"
-sudo -u ubuntu bash << 'EOF'
+sudo -u ubuntu bash << EOF
 
 # Set variables
 AWX_VERSION="2.4.0"
@@ -58,11 +58,13 @@ git checkout tags/"$AWX_VERSION" || { log "Failed to checkout AWX version $AWX_V
 
 # Create kustomization.yml
 log "Creating kustomization.yml"
-cat << 'KUSTOMIZE' > kustomization.yml
+cat > kustomization.yml << KUSTOMIZE
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - github.com/ansible/awx-operator/config/default?ref=2.4.0
+  - awx-demo.yml
 images:
   - name: quay.io/ansible/awx-operator
     newTag: 2.4.0
@@ -70,18 +72,18 @@ namespace: awx
 KUSTOMIZE
 [ $? -eq 0 ] || { log "Failed to create kustomization.yml"; exit 1; }
 
-# Create awx-cr.yml
-log "Creating awx-cr.yml"
-cat << 'AWX_CR' > awx-cr.yml
+# Create awx-demo.yml
+log "Creating awx-demo.yml"
+cat > awx-demo.yml << AWX_DEMO
+---
 apiVersion: awx.ansible.com/v1beta1
 kind: AWX
 metadata:
   name: awx-demo
 spec:
   service_type: nodeport
-  nodeport_port: 80
-AWX_CR
-[ $? -eq 0 ] || { log "Failed to create awx-cr.yml"; exit 1; }
+AWX_DEMO
+[ $? -eq 0 ] || { log "Failed to create awx-demo.yml"; exit 1; }
 
 # Start Minikube
 log "Starting Minikube"
@@ -94,11 +96,11 @@ alias kubectl="minikube kubectl --"
 log "Verifying Minikube nodes"
 kubectl get nodes | grep -q "minikube.*Ready" || { log "Minikube node not ready"; exit 1; }
 
-# Apply AWX Operator and AWX CR
+# Apply AWX Operator and AWX DEMO
 log "Applying AWX Operator"
 kubectl apply -k . || { log "Failed to apply AWX Operator"; exit 1; }
-log "Applying AWX CR"
-kubectl apply -f awx-cr.yml || { log "Failed to apply AWX CR"; exit 1; }
+log "Applying AWX DEMO"
+kubectl apply -f awx-demo.yml || { log "Failed to apply AWX DEMO"; exit 1; }
 
 # Wait for AWX pods to be running
 log "Waiting for AWX pods to be running"
