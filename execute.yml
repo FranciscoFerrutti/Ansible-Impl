@@ -1,0 +1,30 @@
+---
+- name: Ejecutar Terraform desde la EC2
+  hosts: terraform-runner
+  become: yes
+  vars:
+    terraform_dir: /home/ubuntu/infra
+
+  tasks:
+
+    - name: Verificar si Terraform está instalado
+      command: terraform version
+      register: terraform_check
+      ignore_errors: true
+
+    - name: Instalar Terraform si no está presente
+      shell: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/hashicorp.list
+        apt-get update && apt-get install -y terraform
+      when: terraform_check.rc != 0
+
+    - name: Inicializar Terraform
+      shell: terraform init
+      args:
+        chdir: "{{ terraform_dir }}"
+
+    - name: Aplicar Terraform (sin confirmar)
+      shell: terraform apply -auto-approve
+      args:
+        chdir: "{{ terraform_dir }}"

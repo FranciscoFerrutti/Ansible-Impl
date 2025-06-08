@@ -61,6 +61,17 @@ terraform apply
 - Puedes modificar los parámetros en `terraform.tfvars` para ajustar la cantidad de instancias, recursos, etc.
 - La seguridad y el acceso están gestionados mediante grupos de seguridad y claves SSH individuales.
 
+## Integracion con TPE implementado por el grupo 4
+
+### Prerequisitos
+- Tener descargado el TPE del grupo 4 (https://github.com/avilamowski/tpe-redes-g4).
+- Tener la EC2 master del proyecto ya levantada.
+
+### Playbooks
+**credential_copy.yml** : Asigna las credenciales del usuario de aws en la EC2
+**upload.yml**          : Sube a la EC2 master el proyecto del grupo 4.
+**exectue.yml**         : Ejecuta el terraform del grupo 4 para poder levantar el servidor de chat.
+
 ## Autores
 - [Francisco Ferrutti](https://github.com/FranciscoFerrutti)
 - 

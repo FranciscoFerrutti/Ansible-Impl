@@ -1,0 +1,25 @@
+---
+- name: Subir archivos Terraform a la EC2
+  hosts: terraform-runner
+  become: yes
+  vars:
+    local_terraform_dir: ./infra
+    remote_terraform_dir: /home/ubuntu/infra
+
+  tasks:
+
+    - name: Asegurar directorio destino en la EC2
+      file:
+        path: "{{ remote_terraform_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Subir archivos Terraform
+      copy:
+        src: "{{ local_terraform_dir }}/"
+        dest: "{{ remote_terraform_dir }}/"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
