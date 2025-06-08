@@ -16,18 +16,18 @@
         state: directory
         mode: '0700'
 
-    - name: Copiar archivo credentials
-      copy:
-        src: "{{ aws_credentials_src }}"
-        dest: "{{ aws_dir_dest }}/credentials"
-        mode: '0600'
+    # - name: Copiar archivo credentials
+    #   copy:
+    #     src: "{{ aws_credentials_src }}"
+    #     dest: "{{ aws_dir_dest }}/credentials"
+    #     mode: '0600'
 
-    - name: Copiar archivo config (opcional)
-      copy:
-        src: "{{ aws_config_src }}"
-        dest: "{{ aws_dir_dest }}/config"
-        mode: '0600'
-      ignore_errors: yes
+    # - name: Copiar archivo config (opcional)
+    #   copy:
+    #     src: "{{ aws_config_src }}"
+    #     dest: "{{ aws_dir_dest }}/config"
+    #     mode: '0600'
+    #   ignore_errors: yes
 
     - name: Instalar pip3 si no está instalado
       package:
