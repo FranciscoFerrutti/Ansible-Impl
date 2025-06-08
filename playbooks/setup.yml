@@ -1,6 +1,6 @@
 ---
 - name: Setup para el uso de playbooks Ansible con Terraform y AWS
-  hosts: terraform-runner
+  hosts: localhost
   become: yes
   vars:
     aws_credentials_src: ~/.aws/credentials
