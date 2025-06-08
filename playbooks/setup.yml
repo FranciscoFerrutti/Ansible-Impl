@@ -6,6 +6,7 @@
     aws_credentials_src: ~/.aws/credentials
     aws_config_src: ~/.aws/config
     aws_dir_dest: ~/.aws
+    aws_cli_version: "2.13.15"  # Puedes cambiar a la versión que quieras
 
   tasks:
 
@@ -40,7 +41,38 @@
           - botocore
 
     - name: Instalar colección amazon.aws en el host remoto
-      shell: |
-        ansible-galaxy collection install amazon.aws
+      shell: ansible-galaxy collection install amazon.aws
       args:
         executable: /bin/bash
+
+    - name: Descargar instalador AWS CLI
+      get_url:
+        url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-{{ aws_cli_version }}.zip"
+        dest: "/tmp/awscliv2.zip"
+        mode: '0644'
+
+    - name: Instalar unzip si no está instalado
+      package:
+        name: unzip
+        state: present
+
+    - name: Descomprimir instalador AWS CLI
+      unarchive:
+        src: /tmp/awscliv2.zip
+        dest: /tmp
+        remote_src: yes
+        creates: /tmp/aws
+
+    - name: Instalar AWS CLI
+      command: /tmp/aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+      args:
+        creates: /usr/local/bin/aws
+
+    - name: Verificar instalación AWS CLI
+      command: aws --version
+      register: awscli_version
+      changed_when: false
+
+    - name: Mostrar versión instalada de AWS CLI
+      debug:
+        msg: "{{ awscli_version.stdout }}
