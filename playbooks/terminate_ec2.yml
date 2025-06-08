@@ -5,9 +5,8 @@
   gather_facts: no
 
   vars:
-    region: us-east-1  # Region de AWS
-    aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
-    aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+    region: us-east-1  # Región de AWS
+    instance_id: "{{ instance_id }}"  # Asegúrate de definir esta variable
 
   tasks:
     - name: Terminate EC2
@@ -15,8 +14,6 @@
         state: absent
         instance_ids: "{{ instance_id }}"
         region: "{{ region }}"
-        aws_access_key: "{{ aws_access_key }}"
-        aws_secret_key: "{{ aws_secret_key }}"
       register: termination_result
 
     - name: Show termination result
