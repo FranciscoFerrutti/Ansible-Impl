@@ -1,7 +1,7 @@
 ---
-- name: Copiar credenciales AWS a la EC2
+- name: Setup para el uso de playbooks Ansible con Terraform y AWS
   hosts: terraform-runner
-  become: no
+  become: yes
   vars:
     aws_credentials_src: ~/.aws/credentials
     aws_config_src: ~/.aws/config
@@ -27,3 +27,20 @@
         dest: "{{ aws_dir_dest }}/config"
         mode: '0600'
       ignore_errors: yes
+
+    - name: Instalar pip3 si no está instalado
+      package:
+        name: python3-pip
+        state: present
+
+    - name: Instalar boto3 y botocore
+      pip:
+        name:
+          - boto3
+          - botocore
+
+    - name: Instalar colección amazon.aws en el host remoto
+      shell: |
+        ansible-galaxy collection install amazon.aws
+      args:
+        executable: /bin/bash
