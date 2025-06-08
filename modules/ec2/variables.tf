@@ -41,3 +41,13 @@ variable "user_data_path" {
   description = "Path to the user data script for the EC2 instance"
   default     = ""
 }
+
+variable "bucket_name" {
+  type        = string
+  description = "S3 bucket name for getting the HTML template"
+}
+
+variable "zip_file_name" {
+  type        = string
+  description = "Name of the zip file to be uploaded to S3"
+}

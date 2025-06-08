@@ -7,17 +7,25 @@ resource "aws_instance" "this" {
   vpc_security_group_ids = var.vpc_security_group_ids
 
   user_data = templatefile(var.user_data_path, {
-    # html_content =
+    bucket_name = var.bucket_name
+    aws_region      = data.aws_region.current.name
+    zip_file_name   = var.zip_file_name
   })
 
   associate_public_ip_address = var.public_ip
 
+  tags = {
+    Name = var.key_name
+  }
+
 }
+
+data "aws_region" "current" {}
 
 resource "aws_ebs_volume" "this" {
   availability_zone = aws_instance.this.availability_zone
-  size              = var.storage_size
   type              = var.storage_type
+  size              = var.storage_size
 
   tags = {
     Name = "${var.key_name}-volume"

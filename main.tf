@@ -1,4 +1,29 @@
 #########################################
+###             s3 Bucket             ###
+#########################################
+
+module "zip_bucket" {
+  source = "./modules/s3"
+
+  bucket_name = "zip-bucket"
+  bucket_region = "us-east-1"  # Change to your desired region
+  
+}
+
+locals {
+  zip_file_path = "ecommerce-html-template.zip"  # Path to your zip file
+}
+
+# Upload the zip file to the S3 bucket
+resource "aws_s3_object" "zip_file" {
+  bucket = module.zip_bucket.bucket_name
+  key    = local.zip_file_path
+  source = local.zip_file_path
+  etag   = filemd5(local.zip_file_path)
+}
+
+
+#########################################
 ###            Instancias             ###
 #########################################
 
@@ -17,6 +42,13 @@ module "ec2" {
 
   public_ip = lookup(each.value, "public_ip", false)  # Default to false if not specified
   user_data_path = lookup(each.value, "user_data_path", "")  # Default to empty if not specified
+  bucket_name = module.zip_bucket.bucket_name  # Pass the S3 bucket name to the EC2 module
+  zip_file_name = local.zip_file_path  # Pass the zip file name to the EC2 module
+
+  depends_on = [ 
+    aws_s3_object.zip_file,  # Ensure the zip file is uploaded before creating EC2 instances
+    aws_key_pair.ec2  # Ensure the key pair is created before launching instances
+  ]
 }
 
 
@@ -48,18 +80,29 @@ module "vpc" {
 
 resource "tls_private_key" "ec2" {
   algorithm = "RSA"
+  for_each = var.instances
   rsa_bits  = 4096
 }
 
 resource "aws_key_pair" "ec2" {
-  key_name   = "aws_key_pair"
-  public_key = tls_private_key.ec2.public_key_openssh
+  for_each = var.instances
+
+  key_name   = each.value.key_name
+  public_key = tls_private_key.ec2[each.key].public_key_openssh
+
+  tags = {
+    Name = each.value.key_name
+  }
 }
 
 resource "local_file" "ssh_key" {
-  filename = "${aws_key_pair.ec2.key_name}.pem"
-  content  = tls_private_key.ec2.private_key_pem
-  file_permission = "0600" # Set file permission to read/write for the owner only
+  for_each = var.instances
+
+  content  = tls_private_key.ec2[each.key].private_key_pem
+  filename = "${path.module}/${each.value.key_name}.pem"
+
+  # Set permissions to read for the owner only
+  file_permission = "0400"
 }
 
 #########################################
@@ -104,3 +147,56 @@ resource "aws_security_group" "ec2" {
     Name = each.key == "master" ? "SG-MasterServer" : "SG-WebServer${substr(each.key, -1, 1)}"
   }
 }
+
+
+##########################################
+###            Peering                 ###
+##########################################
+
+resource "aws_vpc_peering_connection" "peering1" {
+  vpc_id = module.vpc["master"].id
+  peer_vpc_id = module.vpc["web1"].id
+  auto_accept = true
+  tags = {
+    Name = "Master-Web1-Peering"
+  }
+}
+
+resource "aws_vpc_peering_connection" "peering2" {
+  vpc_id = module.vpc["master"].id
+  peer_vpc_id = module.vpc["web2"].id
+  auto_accept = true
+  tags = {
+    Name = "Master-Web2-Peering"
+  }
+}
+
+resource "aws_vpc_peering_connection" "peering3" {
+  vpc_id = module.vpc["master"].id
+  peer_vpc_id = module.vpc["web3"].id
+  auto_accept = true
+  tags = {
+    Name = "Master-Web3-Peering"
+  }
+}
+
+# Route tables for peering connections
+
+resource "aws_route" "peering1" {
+  route_table_id            = module.vpc["master"].route_table_id
+  destination_cidr_block    = module.vpc["web1"].vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering1.id
+}
+
+resource "aws_route" "peering2" {
+  route_table_id            = module.vpc["master"].route_table_id
+  destination_cidr_block    = module.vpc["web2"].vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering2.id
+}
+
+resource "aws_route" "peering3" {
+  route_table_id            = module.vpc["master"].route_table_id
+  destination_cidr_block    = module.vpc["web3"].vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering3.id
+}
+
