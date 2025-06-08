@@ -1,7 +1,7 @@
 ---
 - name: Setup para el uso de playbooks Ansible con Terraform y AWS
   hosts: localhost
-  become: yes
+  #become: yes
   vars:
     aws_credentials_src: ~/.aws/credentials
     aws_config_src: ~/.aws/config
