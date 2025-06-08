@@ -29,10 +29,10 @@
     #     mode: '0600'
     #   ignore_errors: yes
 
-    - name: Instalar pip3 si no está instalado
-      package:
-        name: python3-pip
-        state: present
+    # - name: Instalar pip3 si no está instalado
+    #   package:
+    #     name: python3-pip
+    #     state: present
 
     - name: Instalar boto3 y botocore
       pip:
