@@ -75,4 +75,4 @@
 
     - name: Mostrar versión instalada de AWS CLI
       debug:
-        msg: "{{ awscli_version.stdout }}
+        var: awscli_version.stdout
