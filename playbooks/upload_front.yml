@@ -1,0 +1,66 @@
+---
+- name: Deploy website on EC2 instance
+  hosts: local
+  become: yes
+  vars:
+    bucket_name: "{{ hostvars[inventory_hostname]['bucket_name'] }}"
+    aws_region: "{{ hostvars[inventory_hostname]['aws_region'] }}"
+    zip_file_name: "{{ hostvars[inventory_hostname]['zip_file_name'] }}"
+
+  tasks:
+    - name: Update apt and install required packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+        name:
+          - nginx
+          - unzip
+          - wget
+          - firewalld
+        state: present
+
+    - name: Download zip file from S3
+      get_url:
+        url: "http://{{ bucket_name }}.s3.{{ aws_region }}.amazonaws.com/{{ zip_file_name }}"
+        dest: "/tmp/{{ zip_file_name }}"
+
+    - name: Unzip website files
+      unarchive:
+        src: "/tmp/{{ zip_file_name }}"
+        dest: "/tmp/"
+        remote_src: yes
+
+    - name: Move website files to /var/www/html
+      command: mv "/tmp/{{ zip_file_name | regex_replace('\\.zip$', '') }}/*" /var/www/html
+      args:
+        removes: "/tmp/{{ zip_file_name | regex_replace('\\.zip$', '') }}"
+
+    - name: Set ownership and permissions on /var/www/html
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        recurse: yes
+        mode: "0777"
+
+    - name: Enable and start nginx
+      systemd:
+        name: nginx
+        enabled: yes
+        state: started
+
+    - name: Configure firewalld to allow HTTP and HTTPS
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - http
+        - https
+
+    - name: Enable and start firewalld
+      systemd:
+        name: firewalld
+        enabled: yes
+        state: started

@@ -1,0 +1,31 @@
+---
+- name: Launch EC2 instance using AWS Lambda
+  hosts: localhost  
+  gather_facts: no
+
+  vars:
+    # default to 0 hours delay if not specified
+    delay_hours: 0
+
+  tasks:
+    - name: Wait before launching EC2 instance
+      ansible.builtin.pause:
+        seconds: "{{ delay_hours | int * 3600 }}"
+      when: delay_hours | int > 0
+
+    - name: Send POST request to Lambda
+      uri:
+        url: "{{ api_url_launch }}"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body:
+          instance_type: "{{ instance_type }}"
+          key_name: "{{ key_name }}"
+        body_format: json
+        return_content: yes
+      register: response
+
+    - name: Display Lambda response
+      debug:
+        var: response.content

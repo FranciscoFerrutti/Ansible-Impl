@@ -1,21 +1,24 @@
 ---
-- name: Dar de baja una instancia EC2 en AWS
+- name: Invoke AWS Lambda to stop/delete EC2 instance
   hosts: localhost
-  connection: local
   gather_facts: no
 
   vars:
-    region: us-east-1  # Región de AWS
-    instance_id: "{{ instance_id }}"  # Asegúrate de definir esta variable
+    ec2_instance_id: ""   # Pass this as an extra var on AWX launch
 
   tasks:
-    - name: Terminate EC2
-      amazon.aws.ec2_instance:
-        state: absent
-        instance_ids: "{{ instance_id }}"
-        region: "{{ region }}"
-      register: termination_result
+    - name: Call Lambda API to stop/delete EC2
+      uri:
+        url: "{{ api_url_kill }}"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body:
+          instance_id: "{{ ec2_instance_id }}"
+        body_format: json
+        status_code: 200
+      register: lambda_response
 
-    - name: Show termination result
+    - name: Show Lambda response
       debug:
-        var: termination_result
+        var: lambda_response.json

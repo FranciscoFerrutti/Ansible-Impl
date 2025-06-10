@@ -200,6 +200,9 @@ resource "aws_route" "peering3" {
   vpc_peering_connection_id = aws_vpc_peering_connection.peering3.id
 }
 
+# #########################################
+# ###     Application Load Balancer     ###
+# #########################################
 
 #########################################
 ###            Lambda Function        ###
