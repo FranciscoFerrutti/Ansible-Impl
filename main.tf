@@ -200,3 +200,61 @@ resource "aws_route" "peering3" {
   vpc_peering_connection_id = aws_vpc_peering_connection.peering3.id
 }
 
+
+#########################################
+###            Lambda Function        ###
+#########################################
+
+locals {
+  lambda_names = var.lambda_names
+  env_vars = {
+    "AMI_ID" = var.ami_id
+  }
+}
+
+module "lambda" {
+  for_each = local.lambda_names
+  source = "./modules/lambda"
+
+  name = each.key
+  handler = each.value.handler
+  method = each.value.method
+  env_vars = {
+    for k in each.value.env_vars : k => local.env_vars[k]
+  }
+  api_folder = var.api_folder
+  
+}
+
+########################################
+###            API Gateway           ###
+########################################
+
+module "api_gw" {
+  for_each = var.lambda_names
+
+  source = "./modules/api_gw"
+  name = each.key
+  lambda_arn  = module.lambda[each.key].arn
+  method      = each.value.method
+  api_id      = aws_apigatewayv2_api.http_api.id
+
+  depends_on = [module.lambda]
+}
+
+resource "aws_apigatewayv2_api" "http_api" {
+  name           = "http-api"
+  protocol_type  = "HTTP"
+
+  cors_configuration {
+      allow_origins     = ["*"]
+      allow_methods     = ["OPTIONS", "POST"]
+      allow_headers     = ["Content-Type", "Authorization"]
+    }
+}
+
+resource "aws_apigatewayv2_stage" "default" {
+  api_id      = aws_apigatewayv2_api.http_api.id
+  name        = "$default"
+  auto_deploy = true
+}

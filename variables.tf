@@ -71,3 +71,26 @@ variable "vpcs" {
     }
   }
 }
+
+variable "lambda_names" {
+  type = map(object({
+    handler = string
+    method  = string
+    env_vars = list(string)
+  }))
+}
+
+variable "api_folder" {
+  type = string
+  default = "api"
+}
+
+variable "aws_region" {
+  type = string
+  default = "us-east-1"
+}
+
+variable "ami_id" {
+  type = string
+  default = "ami-084568db4383264d4" # Ubuntu 24.04 LTS
+}

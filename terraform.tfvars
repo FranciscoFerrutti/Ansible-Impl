@@ -59,3 +59,21 @@ vpcs = {
     public = true
   }
 }
+
+lambda_names = {
+  "terminate_ec2" = {
+    handler = "terminate_ec2.lambda_handler"
+    method = "POST"
+    env_vars = [
+      
+    ]
+  }
+  "launch_ec2" = {
+    handler = "launch_ec2.lambda_handler"
+    method = "POST"
+    env_vars = [
+      "AMI_ID"
+    ]
+  }
+}
+
