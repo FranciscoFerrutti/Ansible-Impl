@@ -10,6 +10,11 @@
 
   tasks:
 
+    - name: Instalar git si no está instalado
+      package:
+        name: git
+        state: present
+
     - name: Crear carpeta .aws en el host remoto
       file:
         path: "{{ aws_dir_dest }}"

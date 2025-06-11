@@ -1,11 +1,13 @@
 ---
 - name: Launch EC2 instance using AWS Lambda
-  hosts: localhost  
+  hosts: local 
   gather_facts: no
 
   vars:
     # default to 0 hours delay if not specified
     delay_hours: 0
+    subnet_id: ""
+    api_url_launch: ""
 
   tasks:
     - name: Wait before launching EC2 instance
@@ -15,13 +17,13 @@
 
     - name: Send POST request to Lambda
       uri:
-        url: "{{ api_url_launch }}"
+        url: "{{ api_url_launch  }}"
         method: POST
         headers:
           Content-Type: "application/json"
         body:
           instance_type: "{{ instance_type }}"
-          key_name: "{{ key_name }}"
+          subnet_id: "{{ subnet_id }}"
         body_format: json
         return_content: yes
       register: response
