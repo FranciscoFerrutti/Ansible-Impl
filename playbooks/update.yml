@@ -1,7 +1,7 @@
 ---
 - name: Manage firewalld rules on web1 via AWX
   hosts: local
-  become: yes
+  become: su
 
   vars:
     open_services: []
