@@ -31,4 +31,4 @@
 
     - name: Display Lambda response
       debug:
-        var: response.content
+        var: response
