@@ -1,7 +1,8 @@
 ---
 - name: Manage firewalld rules on web1 via AWX
   hosts: local
-  become: su
+  become: yes          # enables privilege escalation (boolean)
+  become_method: su  
 
   vars:
     open_services: []
@@ -43,4 +44,4 @@
 
     - name: Confirm playbook completed successfully
       debug:
-        msg: "✅ Firewalld configuration completed successfully on {{ inventory_hostname }}"
+        msg: "✅ Firewalld configuration completed successfully"
