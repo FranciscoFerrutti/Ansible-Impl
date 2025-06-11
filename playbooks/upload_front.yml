@@ -9,7 +9,7 @@
 
   tasks:
     - name: Install required packages
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
         name:
           - nginx
@@ -19,24 +19,24 @@
         state: present
 
     - name: Download zip file from S3
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ zip_file_url }}"
         dest: "/tmp/web.zip"
 
     - name: Extract website files
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/web.zip"
-        dest: "/tmp/"
+        dest: "/tmp/unzipped/"
         remote_src: yes
     
-    - name: Copy website files
-      copy:
-        src: "/tmp/{{ web_folder }}/"
+    - name: Copy website files into /var/www/html
+      ansible.builtin.copy:
+        src: "/tmp/unzipped/{{ web_folder }}/"
         dest: "/var/www/html/"
         remote_src: yes
 
     - name: Set ownership and permissions on /var/www/html
-      file:
+      ansible.builtin.file:
         path: /var/www/html
         owner: www-data
         group: www-data
@@ -44,13 +44,13 @@
         mode: "0777"
 
     - name: Enable and start nginx
-      systemd:
+      ansible.builtin.systemd:
         name: nginx
         enabled: yes
         state: started
 
     - name: Configure firewalld to allow HTTP and HTTPS
-      firewalld:
+      ansible.builtin.firewalld:
         service: "{{ item }}"
         permanent: yes
         state: enabled
@@ -60,7 +60,17 @@
         - https
 
     - name: Enable and start firewalld
-      systemd:
+      ansible.builtin.systemd:
         name: firewalld
         enabled: yes
         state: started
+
+    - name: Delete downloaded zip file
+      ansible.builtin.file:
+        path: "/tmp/web.zip"
+        state: absent
+
+    - name: Delete unzipped files
+      ansible.builtin.file:
+        path: "/tmp/unzipped/"
+        state: absent
