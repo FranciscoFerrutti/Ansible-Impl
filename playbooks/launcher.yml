@@ -31,4 +31,4 @@
 
     - name: Display Lambda response
       debug:
-        var: response
+        var: response.content.instance_id
