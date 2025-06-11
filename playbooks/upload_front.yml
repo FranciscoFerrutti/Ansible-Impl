@@ -5,6 +5,7 @@
   vars:
     aws_region: "{{ hostvars[inventory_hostname]['aws_region'] }}"
     zip_file_url: ""
+    web_folder: ""
 
   tasks:
     - name: Install required packages
@@ -26,6 +27,12 @@
     - name: Extract website files
       unarchive:
         src: "/tmp/web.zip"
+        dest: "/tmp/"
+        remote_src: yes
+    
+    - name: Copy website files
+      copy:
+        src: "/tmp/{{ web_folder }}/"
         dest: "/var/www/html/"
         remote_src: yes
 
