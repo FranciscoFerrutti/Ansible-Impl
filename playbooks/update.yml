@@ -9,10 +9,10 @@
 
   tasks:
     - name: Check if firewalld is installed
-        command: rpm -q firewalld
-        register: firewalld_check
-        ignore_errors: yes
-        changed_when: false
+      command: rpm -q firewalld
+      register: firewalld_check
+      ignore_errors: yes
+      changed_when: false
 
     - name: Install firewalld if not installed
       package:
