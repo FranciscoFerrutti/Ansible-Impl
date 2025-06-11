@@ -160,6 +160,6 @@ terraform apply
         - Comando de uso: ansible-playbook update_firewalld.yml -i "{{ host }}, " --extra-vars "target_host=....." --ssh-extra-args='-o StrictHostKeyChecking=no'
 
 ## Autores
-- [Francisco Ferrutti](62780)
-- [Guido De Caro](61590)
-- 
+- Francisco Ferrutti (62780)
+- Guido De Caro (61590)
+- Lucas David Perri (62746)
