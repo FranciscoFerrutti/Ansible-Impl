@@ -6,9 +6,6 @@
   vars:
     # default to 0 hours delay if not specified
     delay_hours: 0
-    api_url_launch: ""
-    instance_type: "t2.micro"
-    key_name: "web1"
 
   tasks:
     - name: Wait before launching EC2 instance
