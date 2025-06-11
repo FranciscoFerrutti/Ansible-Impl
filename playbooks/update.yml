@@ -40,3 +40,7 @@
     - name: Reload firewalld
       command: firewall-cmd --reload
       when: (open_services | length > 0) or (close_services | length > 0)
+
+    - name: Confirm playbook completed successfully
+      debug:
+        msg: "✅ Firewalld configuration completed successfully on {{ inventory_hostname }}"
