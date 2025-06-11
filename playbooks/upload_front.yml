@@ -1,17 +1,16 @@
 ---
-- name: Deploy website on EC2 instance
-  hosts: local
+- name: Deploy website on EC2 instances
+  hosts: webservers
   become: yes
   vars:
-    bucket_name: "{{ hostvars[inventory_hostname]['bucket_name'] }}"
     aws_region: "{{ hostvars[inventory_hostname]['aws_region'] }}"
-    zip_file_name: "{{ hostvars[inventory_hostname]['zip_file_name'] }}"
+    zip_file_url: ""
+    web_folder: ""
 
   tasks:
-    - name: Update apt and install required packages
-      apt:
+    - name: Install required packages
+      ansible.builtin.apt:
         update_cache: yes
-        upgrade: yes
         name:
           - nginx
           - unzip
@@ -19,24 +18,45 @@
           - firewalld
         state: present
 
+    - name: Delete zip file if present
+      ansible.builtin.file:
+        path: "/tmp/web.zip"
+        state: absent
+
+    - name: Delete unzipped files if present
+      ansible.builtin.file:
+        path: "/tmp/unzipped/"
+        state: absent
+
     - name: Download zip file from S3
-      get_url:
-        url: "http://{{ bucket_name }}.s3.{{ aws_region }}.amazonaws.com/{{ zip_file_name }}"
-        dest: "/tmp/{{ zip_file_name }}"
+      ansible.builtin.get_url:
+        url: "{{ zip_file_url }}"
+        dest: "/tmp/web.zip"
+
+    - name: Create directory to unzip contents
+      ansible.builtin.file:
+        path: "/tmp/unzipped/"
+        state: directory
 
     - name: Unzip website files
-      unarchive:
-        src: "/tmp/{{ zip_file_name }}"
-        dest: "/tmp/"
+      ansible.builtin.unarchive:
+        src: "/tmp/web.zip"
+        dest: "/tmp/unzipped/"
         remote_src: yes
 
-    - name: Move website files to /var/www/html
-      command: mv "/tmp/{{ zip_file_name | regex_replace('\\.zip$', '') }}/*" /var/www/html
-      args:
-        removes: "/tmp/{{ zip_file_name | regex_replace('\\.zip$', '') }}"
+    - name: Delete existing files in /var/www/html
+      ansible.builtin.file:
+        path: "/var/www/html/"
+        state: absent
+    
+    - name: Copy website files into /var/www/html
+      ansible.builtin.copy:
+        src: "/tmp/unzipped/{{ web_folder }}"
+        dest: "/var/www/html/"
+        remote_src: yes
 
     - name: Set ownership and permissions on /var/www/html
-      file:
+      ansible.builtin.file:
         path: /var/www/html
         owner: www-data
         group: www-data
@@ -44,13 +64,13 @@
         mode: "0777"
 
     - name: Enable and start nginx
-      systemd:
+      ansible.builtin.systemd:
         name: nginx
         enabled: yes
         state: started
 
     - name: Configure firewalld to allow HTTP and HTTPS
-      firewalld:
+      ansible.builtin.firewalld:
         service: "{{ item }}"
         permanent: yes
         state: enabled
@@ -60,7 +80,7 @@
         - https
 
     - name: Enable and start firewalld
-      systemd:
+      ansible.builtin.systemd:
         name: firewalld
         enabled: yes
         state: started
