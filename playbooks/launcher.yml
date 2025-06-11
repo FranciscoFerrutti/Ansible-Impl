@@ -7,6 +7,7 @@
     # default to 0 hours delay if not specified
     delay_hours: 0
     subnet_id: ""
+    api_url_launch: ""
 
   tasks:
     - name: Wait before launching EC2 instance
@@ -16,7 +17,7 @@
 
     - name: Send POST request to Lambda
       uri:
-        url: "{{ hostvars['localhost']['api_url_launch']  }}"
+        url: "{{ api_url_launch  }}"
         method: POST
         headers:
           Content-Type: "application/json"
