@@ -28,6 +28,12 @@
         src: "/tmp/web.zip"
         dest: "/tmp/unzipped/"
         remote_src: yes
+        creates: yes
+
+    - name: Delete existing files in /var/www/html
+      ansible.builtin.file:
+        path: "/var/www/html/"
+        state: absent
     
     - name: Copy website files into /var/www/html
       ansible.builtin.copy:
