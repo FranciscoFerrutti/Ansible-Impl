@@ -46,29 +46,48 @@ variable "vpcs" {
   }))
   default = {
     master = {
-      vpc_cidr    = "10.0.6.0/20"
+      vpc_cidr    = "10.0.6.0/23"
       subnet_cidr = "10.0.1.0/24"
       availability_zone = "us-east-1a"
       public = true
     }
     web1 = {
-      vpc_cidr    = "10.0.0.0/20"
+      vpc_cidr    = "10.0.0.0/23"
       subnet_cidr = "10.0.0.0/24"
       availability_zone = "us-east-1b"
       public = true
     }
     web2 = {
-      vpc_cidr    = "10.0.2.0/20"
+      vpc_cidr    = "10.0.2.0/23"
       subnet_cidr = "10.0.0.0/24"
       availability_zone = "us-east-1c"
       public = true
     }
     web3 = {
-      vpc_cidr    = "10.0.4.0/20"
+      vpc_cidr    = "10.0.4.0/23"
       subnet_cidr = "10.0.0.0/24"
       availability_zone = "us-east-1d"
       public = true
     }
+  }
+}
+
+variable "subnet_for_alb" {
+  type = object({
+    vpc_cidr          = string
+    vpc_name          = string
+    subnet_cidr       = string
+    availability_zone = string
+    subnet_name       = string
+    public            = optional(bool, true)
+  })
+  default = {
+    vpc_cidr          = "10.0.6.0/23"
+    vpc_name          = "master"
+    subnet_cidr       = "10.0.7.0/24"
+    availability_zone = "us-east-1b"
+    subnet_name       = "master-alb-subnet"
+    public            = true
   }
 }
 

@@ -60,19 +60,32 @@ vpcs = {
   }
 }
 
+subnet_for_alb = {
+  vpc_cidr          = "10.0.6.0/23"
+  vpc_name          = "master"
+  subnet_cidr       = "10.0.7.0/24"
+  availability_zone = "us-east-1b"
+  subnet_name       = "master-alb-subnet"
+  public            = true
+}
+
 lambda_names = {
   "terminate_ec2" = {
-    handler = "terminate_ec2.lambda_handler"
+    handler = "terminate_ec2.terminate_ec2_handler"
     method = "POST"
     env_vars = [
       
     ]
   }
   "launch_ec2" = {
-    handler = "launch_ec2.lambda_handler"
+    handler = "launch_ec2.launch_ec2_handler"
     method = "POST"
     env_vars = [
-      "AMI_ID"
+      "AMI_ID",
+      "TARGET_GROUP_ARN",
+      "SUBNET_1_ID",
+      "SUBNET_2_ID",
+      "SUBNET_3_ID",
     ]
   }
 }

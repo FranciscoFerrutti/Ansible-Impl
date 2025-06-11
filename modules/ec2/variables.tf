@@ -47,7 +47,12 @@ variable "bucket_name" {
   description = "S3 bucket name for getting the HTML template"
 }
 
-variable "zip_file_name" {
+variable "zip_1_file_name" {
   type        = string
-  description = "Name of the zip file to be uploaded to S3"
+  description = "Name of the first zip file to be uploaded to S3"
+}
+
+variable "zip_2_file_name" {
+  type        = string
+  description = "Name of the second zip file to be uploaded to S3"
 }

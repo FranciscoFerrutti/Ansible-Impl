@@ -9,6 +9,7 @@ resource "aws_lambda_function" "this" {
     runtime = "python3.12"
     filename         = "${var.api_folder}/${var.name}.zip"
     source_code_hash = filebase64sha256("${var.api_folder}/${var.name}.zip")
+    timeout = 300
 
     environment {
         variables = var.env_vars

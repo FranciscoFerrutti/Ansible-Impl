@@ -9,7 +9,8 @@ resource "aws_instance" "this" {
   user_data = templatefile(var.user_data_path, {
     bucket_name = var.bucket_name
     aws_region      = data.aws_region.current.name
-    zip_file_name   = var.zip_file_name
+    zip_1_file_name   = var.zip_1_file_name
+    zip_2_file_name   = var.zip_2_file_name
   })
 
   associate_public_ip_address = var.public_ip
