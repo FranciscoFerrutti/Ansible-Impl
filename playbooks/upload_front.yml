@@ -28,7 +28,7 @@
         src: "/tmp/web.zip"
         dest: "/tmp/unzipped/"
         remote_src: yes
-        creates: yes
+        creates: "/tmp/unzipped/"
 
     - name: Delete existing files in /var/www/html
       ansible.builtin.file:
