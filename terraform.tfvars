@@ -86,6 +86,9 @@ lambda_names = {
       "SUBNET_1_ID",
       "SUBNET_2_ID",
       "SUBNET_3_ID",
+      "SECURITY_GROUP_1_ID",
+      "SECURITY_GROUP_2_ID",
+      "SECURITY_GROUP_3_ID",
     ]
   }
 }

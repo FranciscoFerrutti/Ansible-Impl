@@ -53,6 +53,22 @@ def launch_ec2_handler(event, context):
                 })
             }
         
+        security_group_map = {
+            subnet_1_id: os.environ.get('SECURITY_GROUP_1_ID'),
+            subnet_2_id: os.environ.get('SECURITY_GROUP_2_ID'),
+            subnet_3_id: os.environ.get('SECURITY_GROUP_3_ID')
+        }
+
+        # Get the security group ID based on the subnet ID
+        security_group_id = security_group_map.get(subnet_id)
+        if not security_group_id:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({
+                    'message': f'No security group configured for subnet_id: {subnet_id}.'
+                })
+            }
+
         # Create an EC2 client
         ec2_client = boto3.client('ec2', region_name=region)
         
@@ -64,6 +80,7 @@ def launch_ec2_handler(event, context):
             SubnetId=subnet_id,
             MinCount=1,
             MaxCount=1,
+            SecurityGroupIds=[security_group_id],
             TagSpecifications=[
                 {
                     'ResourceType': 'instance',

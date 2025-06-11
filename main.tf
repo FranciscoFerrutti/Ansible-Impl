@@ -294,6 +294,9 @@ locals {
     "SUBNET_1_ID" = module.vpc["web1"].subnet_ids[0],
     "SUBNET_2_ID" = module.vpc["web2"].subnet_ids[0],
     "SUBNET_3_ID" = module.vpc["web3"].subnet_ids[0],
+    "SECURITY_GROUP_1_ID" = aws_security_group.ec2["web1"].id,
+    "SECURITY_GROUP_2_ID" = aws_security_group.ec2["web2"].id,
+    "SECURITY_GROUP_3_ID" = aws_security_group.ec2["web3"].id,
   }
 }
 
