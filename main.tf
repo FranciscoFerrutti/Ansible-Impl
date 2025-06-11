@@ -138,9 +138,8 @@ resource "aws_security_group" "ec2" {
   dynamic "ingress" {
     for_each = each.key == "master" ? [
       { from_port = 22,   to_port = 22,   protocol = "tcp", description = "SSH" },
-      { from_port = 80,   to_port = 80,   protocol = "tcp", description = "HTTP" },
-      { from_port = 443,  to_port = 443,  protocol = "tcp", description = "HTTPS" },
-      { from_port = 30000, to_port = 32000, protocol = "tcp", description = "Custom TCP" } # TODO: Adjust ports
+      { from_port = 8080,  to_port = 8080,  protocol = "tcp", description = "HTTPS" },
+      { from_port = 8443,  to_port = 8443,  protocol = "tcp", description = "HTTPS" },
     ] : [
       { from_port = 22,   to_port = 22,   protocol = "tcp", description = "SSH" },
       { from_port = 80,   to_port = 80,   protocol = "tcp", description = "HTTP" }
