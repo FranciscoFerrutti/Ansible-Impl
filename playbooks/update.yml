@@ -1,8 +1,7 @@
 ---
 - name: Manage firewalld rules on web1 via AWX
-  hosts: local
-  become: yes          # enables privilege escalation (boolean)
-  become_method: su  
+  hosts: ubuntu
+  become: yes          
 
   vars:
     open_services: []
