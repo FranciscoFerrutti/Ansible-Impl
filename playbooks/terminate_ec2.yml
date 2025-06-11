@@ -21,4 +21,4 @@
 
     - name: Show Lambda response
       debug:
-        var: lambda_response
+        var: lambda_response.msg
