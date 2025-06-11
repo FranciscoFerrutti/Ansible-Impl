@@ -1,28 +1,17 @@
 ---
-- name: Manage firewalld rules on Ubuntu EC2 via AWX
+- name: Manage firewalld rules on web1 via AWX
   hosts: ubuntu
-  become: yes
+  become: yes          
 
   vars:
     open_services: []
     close_services: []
 
   tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Check if firewalld is installed
-      command: dpkg -s firewalld
-      register: firewalld_check
-      ignore_errors: yes
-      changed_when: false
-
-    - name: Install firewalld if not installed
-      apt:
+    - name: Ensure firewalld is installed
+      package:
         name: firewalld
         state: present
-      when: firewalld_check.rc != 0
 
     - name: Ensure firewalld is enabled and running
       systemd:
@@ -55,3 +44,4 @@
     - name: Confirm playbook completed successfully
       debug:
         msg: "✅ Firewalld configuration completed successfully"
+
