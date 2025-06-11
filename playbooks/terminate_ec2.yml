@@ -5,6 +5,7 @@
 
   vars:
     ec2_instance_id: ""   # Pass this as an extra var on AWX launch
+    api_url_kill: ""  # Pass this as an extra var on AWX launch
 
   tasks:
     - name: Call Lambda API to stop/delete EC2
