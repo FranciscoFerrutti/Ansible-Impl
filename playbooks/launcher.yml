@@ -22,6 +22,7 @@
         body:
           instance_type: "{{ instance_type }}"
           key_name: "{{ key_name }}"
+          subnet_id: "{{ subnet_id }}"
         body_format: json
         return_content: yes
       register: response
