@@ -18,6 +18,16 @@
           - firewalld
         state: present
 
+    - name: Delete zip file if present
+      ansible.builtin.file:
+        path: "/tmp/web.zip"
+        state: absent
+
+    - name: Delete unzipped files if present
+      ansible.builtin.file:
+        path: "/tmp/unzipped/"
+        state: absent
+
     - name: Download zip file from S3
       ansible.builtin.get_url:
         url: "{{ zip_file_url }}"
@@ -28,7 +38,7 @@
         path: "/tmp/unzipped/"
         state: directory
 
-    - name: Extract website files
+    - name: Unzip website files
       ansible.builtin.unarchive:
         src: "/tmp/web.zip"
         dest: "/tmp/unzipped/"
@@ -41,7 +51,7 @@
     
     - name: Copy website files into /var/www/html
       ansible.builtin.copy:
-        src: "/tmp/unzipped/{{ web_folder }}/"
+        src: "/tmp/unzipped/{{ web_folder }}"
         dest: "/var/www/html/"
         remote_src: yes
 
@@ -74,13 +84,3 @@
         name: firewalld
         enabled: yes
         state: started
-
-    - name: Delete downloaded zip file
-      ansible.builtin.file:
-        path: "/tmp/web.zip"
-        state: absent
-
-    - name: Delete unzipped files
-      ansible.builtin.file:
-        path: "/tmp/unzipped/"
-        state: absent
