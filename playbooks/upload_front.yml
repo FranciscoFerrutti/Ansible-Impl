@@ -23,12 +23,16 @@
         url: "{{ zip_file_url }}"
         dest: "/tmp/web.zip"
 
+    - name: Create directory to unzip contents
+      ansible.builtin.file:
+        path: "/tmp/unzipped/"
+        state: directory
+
     - name: Extract website files
       ansible.builtin.unarchive:
         src: "/tmp/web.zip"
         dest: "/tmp/unzipped/"
         remote_src: yes
-        creates: "/tmp/unzipped/"
 
     - name: Delete existing files in /var/www/html
       ansible.builtin.file:
