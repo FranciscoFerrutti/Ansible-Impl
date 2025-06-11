@@ -1,5 +1,5 @@
 ---
-- name: Manage firewalld rules on web1 via AWX
+- name: Manage firewalld rules on Ubuntu EC2 via AWX
   hosts: ubuntu
   become: yes
 
@@ -8,31 +8,21 @@
     close_services: []
 
   tasks:
-    - name: Check if firewalld is installed (RedHat)
-      command: rpm -q firewalld
-      register: firewalld_check
-      ignore_errors: yes
-      changed_when: false
-      when: ansible_facts['os_family'] == 'RedHat'
+    - name: Update apt cache
+      apt:
+        update_cache: yes
 
-    - name: Check if firewalld is installed (Debian)
+    - name: Check if firewalld is installed
       command: dpkg -s firewalld
       register: firewalld_check
       ignore_errors: yes
       changed_when: false
-      when: ansible_facts['os_family'] == 'Debian'
 
-    - name: Install firewalld if not installed (RedHat)
-      package:
+    - name: Install firewalld if not installed
+      apt:
         name: firewalld
         state: present
-      when: (ansible_facts['os_family'] == 'RedHat') and (firewalld_check.rc != 0)
-
-    - name: Install firewalld if not installed (Debian)
-      package:
-        name: firewalld
-        state: present
-      when: (ansible_facts['os_family'] == 'Debian') and (firewalld_check.rc != 0)
+      when: firewalld_check.rc != 0
 
     - name: Ensure firewalld is enabled and running
       systemd:
