@@ -1,14 +1,13 @@
 ---
-- name: Deploy website on EC2 instance
-  hosts: local
+- name: Deploy website on EC2 instances
+  hosts: webservers
   become: yes
   vars:
-    bucket_name: "{{ hostvars[inventory_hostname]['bucket_name'] }}"
     aws_region: "{{ hostvars[inventory_hostname]['aws_region'] }}"
-    zip_file_name: "{{ hostvars[inventory_hostname]['zip_file_name'] }}"
+    zip_file_url: ""
 
   tasks:
-    - name: Update apt and install required packages
+    - name: Install required packages
       apt:
         update_cache: yes
         upgrade: yes
@@ -21,19 +20,14 @@
 
     - name: Download zip file from S3
       get_url:
-        url: "http://{{ bucket_name }}.s3.{{ aws_region }}.amazonaws.com/{{ zip_file_name }}"
-        dest: "/tmp/{{ zip_file_name }}"
+        url: "{{ zip_file_url }}"
+        dest: "/tmp/web.zip"
 
-    - name: Unzip website files
+    - name: Extract website files
       unarchive:
-        src: "/tmp/{{ zip_file_name }}"
-        dest: "/tmp/"
+        src: "/tmp/web.zip"
+        dest: "/var/www/html/"
         remote_src: yes
-
-    - name: Move website files to /var/www/html
-      command: mv "/tmp/{{ zip_file_name | regex_replace('\\.zip$', '') }}/*" /var/www/html
-      args:
-        removes: "/tmp/{{ zip_file_name | regex_replace('\\.zip$', '') }}"
 
     - name: Set ownership and permissions on /var/www/html
       file:
