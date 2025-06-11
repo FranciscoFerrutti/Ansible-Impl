@@ -1,6 +1,6 @@
 ---
 - name: Manage firewalld rules on web1 via AWX
-  hosts: all
+  hosts: ubuntu
   become: yes
 
   vars:
