@@ -8,16 +8,17 @@
     close_services: []
 
   tasks:
-    - name: Ensure firewalld is installed
+    - name: Check if firewalld is installed
+        command: rpm -q firewalld
+        register: firewalld_check
+        ignore_errors: yes
+        changed_when: false
+
+    - name: Install firewalld if not installed
       package:
         name: firewalld
         state: present
-
-    - name: Ensure firewalld is enabled and running
-      systemd:
-        name: firewalld
-        state: started
-        enabled: yes
+      when: firewalld_check.rc != 0
 
     - name: Open firewalld services
       firewalld:
