@@ -14,9 +14,8 @@
         method: POST
         headers:
           Content-Type: "application/json"
-        body:
-          instance_id: "{{ ec2_instance_id }}"
-        body_format: json
+        body: "{{ {'instance_id': ec2_instance_id} | to_json }}"
+        body_format: raw
         status_code: 200
       register: lambda_response
 
