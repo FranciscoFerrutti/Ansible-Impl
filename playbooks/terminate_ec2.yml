@@ -4,7 +4,7 @@
   gather_facts: no
 
   vars:
-    ec2_instance_id: ""   # Pass this as an extra var on AWX launch
+    ec2_instance_id: ""   # Pass this as an extra var on AWX launch 
 
   tasks:
     - name: Call Lambda API to stop/delete EC2
@@ -13,12 +13,11 @@
         method: POST
         headers:
           Content-Type: "application/json"
-        body:
-          instance_id: "{{ ec2_instance_id }}"
-        body_format: json
+        body: "{{ {'instance_id': ec2_instance_id} | to_json }}"
+        body_format: raw
         status_code: 200
       register: lambda_response
 
     - name: Show Lambda response
       debug:
-        var: lambda_response.json
+        var: lambda_response.msg
