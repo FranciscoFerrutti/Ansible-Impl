@@ -6,7 +6,6 @@
   vars:
     # default to 0 hours delay if not specified
     delay_hours: 0
-    key_name: ""
     subnet_id: ""
 
   tasks:
@@ -17,13 +16,12 @@
 
     - name: Send POST request to Lambda
       uri:
-        url: "{{ api_url_launch }}"
+        url: "{{ hostvars['localhost']['api_url_launch']  }}"
         method: POST
         headers:
           Content-Type: "application/json"
         body:
           instance_type: "{{ instance_type }}"
-          key_name: "{{ key_name }}"
           subnet_id: "{{ subnet_id }}"
         body_format: json
         return_content: yes
