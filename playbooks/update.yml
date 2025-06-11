@@ -1,39 +1,42 @@
 ---
-- name: Update firewall rules on EC2 instance
-  hosts: local
+- name: Manage firewalld rules on web1 via AWX
+  hosts: all
   become: yes
 
+  vars:
+    open_services: []
+    close_services: []
+
   tasks:
-    - name: Ensure firewalld is installed and running
-      apt:
+    - name: Ensure firewalld is installed
+      package:
         name: firewalld
         state: present
-        update_cache: yes
 
-    - name: Enable and start firewalld
+    - name: Ensure firewalld is enabled and running
       systemd:
         name: firewalld
-        enabled: yes
         state: started
+        enabled: yes
 
-    - name: Add firewalld services (open ports)
+    - name: Open firewalld services
       firewalld:
         service: "{{ item }}"
         permanent: yes
         state: enabled
         immediate: yes
       loop: "{{ open_services }}"
-      when: open_services is defined and open_services | length > 0
+      when: open_services | length > 0
 
-    - name: Remove firewalld services (close ports)
+    - name: Close firewalld services
       firewalld:
         service: "{{ item }}"
         permanent: yes
         state: disabled
         immediate: yes
       loop: "{{ close_services }}"
-      when: close_services is defined and close_services | length > 0
+      when: close_services | length > 0
 
-    - name: Reload firewalld to apply changes
+    - name: Reload firewalld
       command: firewall-cmd --reload
       when: (open_services | length > 0) or (close_services | length > 0)
