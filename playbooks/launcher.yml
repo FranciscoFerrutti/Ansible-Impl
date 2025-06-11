@@ -6,6 +6,8 @@
   vars:
     # default to 0 hours delay if not specified
     delay_hours: 0
+    key_name: ""
+    subnet_id: ""
 
   tasks:
     - name: Wait before launching EC2 instance
