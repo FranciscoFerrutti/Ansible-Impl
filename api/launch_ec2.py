@@ -118,6 +118,7 @@ def launch_ec2_handler(event, context):
                 'message': 'EC2 instance launched successfully',
                 'instance_id': response['Instances'][0]['InstanceId'],
                 'instance_public_ip': response['Instances'][0].get('PublicIpAddress', 'N/A'),
+                'instance_private_ip': response['Instances'][0]['PrivateIpAddress']
             })
         }
     
