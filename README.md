@@ -161,6 +161,9 @@ terraform apply
 **update.yml**          : Update del firewall que corre como servicio en las web instances.
         -Parametros requeridos: [open_servicies](servicios para habilitar en el firewall)
                                 [close_services](servicios para deshabilitar en el firewall)
+**upload_front.yml**
+        -Parametros requeridos: [zip_file_url](Url del bucket donde se aloja el nuevo frontend)
+                                [web_folder](Carpeta dentro del bucket donde se aloja el frontend)
 
 ## Autores
 - Francisco Ferrutti (62780)
